@@ -1,5 +1,3 @@
-const { ipcRenderer } = require('electron');
-
 class App {
     constructor() {
         this.currentModule = 'dashboard';
@@ -14,39 +12,51 @@ class App {
     }
 
     setupNavigation() {
+        console.log('Setting up navigation...');
         const navLinks = document.querySelectorAll('.nav-link');
+        console.log('Found nav links:', navLinks.length);
         
         navLinks.forEach(link => {
             link.addEventListener('click', (e) => {
                 e.preventDefault();
-                const module = link.dataset.module;
+                const module = link.getAttribute('data-module');
+                console.log('Navigation clicked:', module);
                 this.navigateToModule(module);
             });
         });
     }
 
-    async navigateToModule(module) {
-        if (this.currentModule === module) return;
+    navigateToModule(moduleName) {
+        console.log('Navigating to module:', moduleName);
+        
+        // Hide all modules
+        const modules = document.querySelectorAll('.module-content');
+        console.log('Found modules:', modules.length);
+        modules.forEach(module => {
+            module.style.display = 'none';
+        });
 
         // Update active nav link
-        document.querySelectorAll('.nav-link').forEach(link => {
+        const navLinks = document.querySelectorAll('.nav-link');
+        navLinks.forEach(link => {
             link.classList.remove('active');
         });
-        document.querySelector(`[data-module="${module}"]`).classList.add('active');
 
-        // Hide current module content
-        document.querySelectorAll('.module-content').forEach(content => {
-            content.classList.remove('active');
-        });
+        const activeLink = document.querySelector(`[data-module="${moduleName}"]`);
+        if (activeLink) {
+            activeLink.classList.add('active');
+        }
 
-        // Show new module content
-        const moduleContent = document.getElementById(`${module}-content`);
-        moduleContent.classList.add('active');
-
-        this.currentModule = module;
-
-        // Load module content
-        await this.loadModuleContent(module);
+        // Show selected module - using correct ID format
+        const targetModule = document.getElementById(`${moduleName}-content`);
+        console.log('Target module element:', targetModule);
+        
+        if (targetModule) {
+            targetModule.style.display = 'block';
+            this.loadModuleContent(moduleName);
+        } else {
+            console.error(`Module element not found: ${moduleName}-content`);
+        }
     }
 
     async loadModuleContent(module) {
@@ -58,22 +68,40 @@ class App {
                     await this.loadDashboard();
                     break;
                 case 'clients':
-                    await window.clientsModule.init();
+                    await this.loadModuleHTML('clients');
+                    if (window.clientsModule) {
+                        await window.clientsModule.init();
+                    }
                     break;
                 case 'projects':
-                    await window.projectsModule.init();
+                    await this.loadModuleHTML('projects');
+                    if (window.projectsModule) {
+                        await window.projectsModule.init();
+                    }
                     break;
                 case 'bills':
-                    await window.billsModule.init();
+                    await this.loadModuleHTML('bills');
+                    if (window.billsModule) {
+                        await window.billsModule.init();
+                    }
                     break;
                 case 'meetings':
-                    await window.meetingsModule.init();
+                    await this.loadModuleHTML('meetings');
+                    if (window.meetingsModule) {
+                        await window.meetingsModule.init();
+                    }
                     break;
                 case 'campaigns':
-                    await window.campaignsModule.init();
+                    await this.loadModuleHTML('campaigns');
+                    if (window.campaignsModule) {
+                        await window.campaignsModule.init();
+                    }
                     break;
                 case 'leads':
-                    await window.leadsModule.init();
+                    await this.loadModuleHTML('leads');
+                    if (window.leadsModule) {
+                        await window.leadsModule.init();
+                    }
                     break;
             }
         } catch (error) {
@@ -81,6 +109,33 @@ class App {
             this.showError(`Erro ao carregar ${module}`);
         } finally {
             this.hideLoading();
+        }
+    }
+
+    async loadModuleHTML(module) {
+        const moduleContent = document.getElementById(`${module}-content`);
+        
+        // Check if content is already loaded
+        if (moduleContent.innerHTML.trim() !== '') {
+            return;
+        }
+
+        try {
+            const response = await fetch(`modules/${module}.html`);
+            if (!response.ok) {
+                throw new Error(`Failed to load ${module}.html`);
+            }
+            const html = await response.text();
+            moduleContent.innerHTML = html;
+        } catch (error) {
+            console.error(`Error loading ${module} HTML:`, error);
+            moduleContent.innerHTML = `
+                <div class="error-state">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h3>Erro ao carregar módulo</h3>
+                    <p>Não foi possível carregar o conteúdo de ${module}</p>
+                </div>
+            `;
         }
     }
 
@@ -289,7 +344,31 @@ class App {
 
 // Initialize app when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    window.app = new App();
+    console.log('DOM loaded, initializing modules...');
+    
+    // Initialize modules first
+    try {
+        window.dashboardModule = window.dashboardModule || new DashboardModule();
+        window.clientsModule = new ClientsModule();
+        window.projectsModule = new ProjectsModule();
+        window.billsModule = new BillsModule();
+        window.meetingsModule = new MeetingsModule();
+        window.campaignsModule = new CampaignsModule();
+        window.leadsModule = new LeadsModule();
+        
+        console.log('All modules initialized successfully');
+        
+        // Then initialize the app
+        window.app = new App();
+        
+        // Make notification functions globally available
+        window.showError = (message) => window.app.showError(message);
+        window.showSuccess = (message) => window.app.showSuccess(message);
+        
+        console.log('App initialized successfully');
+    } catch (error) {
+        console.error('Error initializing modules:', error);
+    }
 });
 
 // Add CSS animation for notifications

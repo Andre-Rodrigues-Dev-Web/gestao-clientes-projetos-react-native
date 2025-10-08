@@ -1,147 +1,21 @@
-const { ipcRenderer } = require('electron');
-
+// API wrapper using the exposed window.api from preload.js
 class API {
     constructor() {
-        this.clients = new ClientsAPI();
-        this.projects = new ProjectsAPI();
-        this.bills = new BillsAPI();
-        this.meetings = new MeetingsAPI();
-        this.campaigns = new CampaignsAPI();
-        this.leads = new LeadsAPI();
+        // Check if window.api is available from preload.js
+        if (!window.api) {
+            console.error('window.api is not available. Make sure preload.js is loaded correctly.');
+            return;
+        }
+        
+        // Use the exposed API from preload.js
+        this.clients = window.api.clients;
+        this.projects = window.api.projects;
+        this.bills = window.api.bills;
+        this.meetings = window.api.meetings;
+        this.campaigns = window.api.campaigns;
+        this.leads = window.api.leads;
     }
 }
 
-class ClientsAPI {
-    async getAll() {
-        return await ipcRenderer.invoke('clients:getAll');
-    }
-
-    async getById(id) {
-        return await ipcRenderer.invoke('clients:getById', id);
-    }
-
-    async create(client) {
-        return await ipcRenderer.invoke('clients:create', client);
-    }
-
-    async update(id, client) {
-        return await ipcRenderer.invoke('clients:update', id, client);
-    }
-
-    async delete(id) {
-        return await ipcRenderer.invoke('clients:delete', id);
-    }
-}
-
-class ProjectsAPI {
-    async getAll() {
-        return await ipcRenderer.invoke('projects:getAll');
-    }
-
-    async getById(id) {
-        return await ipcRenderer.invoke('projects:getById', id);
-    }
-
-    async create(project) {
-        return await ipcRenderer.invoke('projects:create', project);
-    }
-
-    async update(id, project) {
-        return await ipcRenderer.invoke('projects:update', id, project);
-    }
-
-    async delete(id) {
-        return await ipcRenderer.invoke('projects:delete', id);
-    }
-}
-
-class BillsAPI {
-    async getAll() {
-        return await ipcRenderer.invoke('bills:getAll');
-    }
-
-    async getById(id) {
-        return await ipcRenderer.invoke('bills:getById', id);
-    }
-
-    async create(bill) {
-        return await ipcRenderer.invoke('bills:create', bill);
-    }
-
-    async update(id, bill) {
-        return await ipcRenderer.invoke('bills:update', id, bill);
-    }
-
-    async delete(id) {
-        return await ipcRenderer.invoke('bills:delete', id);
-    }
-}
-
-class MeetingsAPI {
-    async getAll() {
-        return await ipcRenderer.invoke('meetings:getAll');
-    }
-
-    async getById(id) {
-        return await ipcRenderer.invoke('meetings:getById', id);
-    }
-
-    async create(meeting) {
-        return await ipcRenderer.invoke('meetings:create', meeting);
-    }
-
-    async update(id, meeting) {
-        return await ipcRenderer.invoke('meetings:update', id, meeting);
-    }
-
-    async delete(id) {
-        return await ipcRenderer.invoke('meetings:delete', id);
-    }
-}
-
-class CampaignsAPI {
-    async getAll() {
-        return await ipcRenderer.invoke('campaigns:getAll');
-    }
-
-    async getById(id) {
-        return await ipcRenderer.invoke('campaigns:getById', id);
-    }
-
-    async create(campaign) {
-        return await ipcRenderer.invoke('campaigns:create', campaign);
-    }
-
-    async update(id, campaign) {
-        return await ipcRenderer.invoke('campaigns:update', id, campaign);
-    }
-
-    async delete(id) {
-        return await ipcRenderer.invoke('campaigns:delete', id);
-    }
-}
-
-class LeadsAPI {
-    async getAll() {
-        return await ipcRenderer.invoke('leads:getAll');
-    }
-
-    async getById(id) {
-        return await ipcRenderer.invoke('leads:getById', id);
-    }
-
-    async create(lead) {
-        return await ipcRenderer.invoke('leads:create', lead);
-    }
-
-    async update(id, lead) {
-        return await ipcRenderer.invoke('leads:update', id, lead);
-    }
-
-    async delete(id) {
-        return await ipcRenderer.invoke('leads:delete', id);
-    }
-}
-
-// Initialize API instance
-window.api = new API();
+// Initialize the API wrapper and make it globally available
+window.apiWrapper = new API();

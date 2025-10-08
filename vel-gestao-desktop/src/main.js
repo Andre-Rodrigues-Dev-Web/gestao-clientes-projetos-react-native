@@ -12,15 +12,21 @@ function createWindow() {
     minWidth: 1200,
     minHeight: 700,
     webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false,
-      enableRemoteModule: true
+      nodeIntegration: false,
+      contextIsolation: true,
+      enableRemoteModule: false,
+      preload: path.join(__dirname, 'preload.js')
     },
     icon: path.join(__dirname, '../assets/icon.png'),
     show: false
   });
 
   mainWindow.loadFile('src/renderer/index.html');
+    
+    // Open DevTools only in development mode
+    if (process.env.NODE_ENV === 'development') {
+        mainWindow.webContents.openDevTools();
+    }
 
   // Mostrar janela quando estiver pronta
   mainWindow.once('ready-to-show', () => {

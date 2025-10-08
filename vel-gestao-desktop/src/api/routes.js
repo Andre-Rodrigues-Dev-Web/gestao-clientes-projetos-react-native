@@ -268,11 +268,11 @@ function setupAPIRoutes() {
   ipcMain.handle('campaigns:create', async (event, campaign) => {
     const db = getDatabase();
     return new Promise((resolve, reject) => {
-      const sql = `INSERT INTO marketing_campaigns (name, description, campaign_type, target_audience, budget, start_date, end_date, status, channels, goals, metrics) 
-                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-      const params = [campaign.name, campaign.description, campaign.campaign_type, campaign.target_audience, campaign.budget,
-                     campaign.start_date, campaign.end_date, campaign.status || 'planning', campaign.channels, 
-                     campaign.goals, campaign.metrics];
+      const sql = `INSERT INTO marketing_campaigns (name, description, type, target_audience, budget, start_date, end_date, status, objectives, leads_generated, revenue, spent) 
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+      const params = [campaign.name, campaign.description, campaign.type, campaign.target_audience, campaign.budget,
+                     campaign.start_date, campaign.end_date, campaign.status || 'planned', campaign.objectives, 
+                     campaign.leads_generated || 0, campaign.revenue || 0, campaign.spent || 0];
       
       db.run(sql, params, function(err) {
         if (err) reject(err);
@@ -285,12 +285,12 @@ function setupAPIRoutes() {
   ipcMain.handle('campaigns:update', async (event, id, campaign) => {
     const db = getDatabase();
     return new Promise((resolve, reject) => {
-      const sql = `UPDATE marketing_campaigns SET name = ?, description = ?, campaign_type = ?, target_audience = ?, 
-                   budget = ?, start_date = ?, end_date = ?, status = ?, channels = ?, goals = ?, metrics = ?, 
-                   results = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`;
-      const params = [campaign.name, campaign.description, campaign.campaign_type, campaign.target_audience, campaign.budget,
-                     campaign.start_date, campaign.end_date, campaign.status, campaign.channels, campaign.goals, 
-                     campaign.metrics, campaign.results, id];
+      const sql = `UPDATE marketing_campaigns SET name = ?, description = ?, type = ?, target_audience = ?, 
+                   budget = ?, start_date = ?, end_date = ?, status = ?, objectives = ?, leads_generated = ?, 
+                   revenue = ?, spent = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`;
+      const params = [campaign.name, campaign.description, campaign.type, campaign.target_audience, campaign.budget,
+                     campaign.start_date, campaign.end_date, campaign.status, campaign.objectives, 
+                     campaign.leads_generated || 0, campaign.revenue || 0, campaign.spent || 0, id];
       
       db.run(sql, params, function(err) {
         if (err) reject(err);

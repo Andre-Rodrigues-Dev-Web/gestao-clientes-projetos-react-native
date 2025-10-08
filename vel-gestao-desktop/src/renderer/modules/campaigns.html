@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campanhas de Marketing</title>
+    <style>
+        .campaigns-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e1e5e9;
+        }
+
+        .campaigns-title {
+            margin: 0;
+            color: #2c3e50;
+            font-size: 2rem;
+            font-weight: 600;
+        }
+
+        .campaigns-description {
+            color: #7f8c8d;
+            margin: 0.5rem 0 0 0;
+            font-size: 1rem;
+        }
+
+        .campaigns-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-left: 4px solid #3498db;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+        }
+
+        .stat-card.active { border-left-color: #27ae60; }
+        .stat-card.completed { border-left-color: #2ecc71; }
+        .stat-card.planned { border-left-color: #f39c12; }
+        .stat-card.budget { border-left-color: #9b59b6; }
+        .stat-card.leads { border-left-color: #e74c3c; }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .campaigns-filters {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .filters-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 1rem;
+            align-items: end;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-group label {
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        .campaigns-content {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th {
+            background: #f8f9fa;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: #2c3e50;
+            border-bottom: 2px solid #e1e5e9;
+        }
+
+        .data-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #e1e5e9;
+            vertical-align: middle;
+        }
+
+        .campaign-row {
+            transition: background-color 0.2s ease;
+        }
+
+        .campaign-row:hover {
+            background-color: #f8f9fa;
+        }
+
+        .campaign-row.active {
+            border-left: 4px solid #27ae60;
+        }
+
+        .campaign-row.completed {
+            border-left: 4px solid #2ecc71;
+        }
+
+        .campaign-row.planned {
+            border-left: 4px solid #f39c12;
+        }
+
+        .campaign-row.paused {
+            border-left: 4px solid #e67e22;
+        }
+
+        .campaign-row.cancelled {
+            border-left: 4px solid #e74c3c;
+        }
+
+        .campaign-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .campaign-name {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.25rem;
+        }
+
+        .campaign-type {
+            font-size: 0.85rem;
+            color: #7f8c8d;
+            background: #ecf0f1;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            display: inline-block;
+            width: fit-content;
+        }
+
+        .campaign-dates {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .start-date {
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        .end-date {
+            font-size: 0.85rem;
+            color: #7f8c8d;
+            margin-top: 0.25rem;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-badge.planned {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-badge.active {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-badge.paused {
+            background: #ffeaa7;
+            color: #d63031;
+        }
+
+        .status-badge.completed {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .status-badge.cancelled {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .budget-cell {
+            text-align: right;
+        }
+
+        .budget-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .budget {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .spent {
+            font-size: 0.85rem;
+            color: #e74c3c;
+            margin-top: 0.25rem;
+        }
+
+        .metrics {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .leads {
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        .roi {
+            font-size: 0.85rem;
+            margin-top: 0.25rem;
+        }
+
+        .roi.positive {
+            color: #27ae60;
+        }
+
+        .roi.negative {
+            color: #e74c3c;
+        }
+
+        .progress-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .progress-bar {
+            flex: 1;
+            height: 8px;
+            background: #ecf0f1;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3498db, #2ecc71);
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #2c3e50;
+            min-width: 35px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-icon {
+            background: none;
+            border: none;
+            padding: 0.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #7f8c8d;
+        }
+
+        .btn-icon:hover {
+            background: #ecf0f1;
+            color: #2c3e50;
+        }
+
+        .btn-icon.success:hover {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .btn-icon.warning:hover {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .btn-icon.danger:hover {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 1.5rem;
+            background: #f8f9fa;
+        }
+
+        .pagination-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid #dee2e6;
+            background: white;
+            color: #495057;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .pagination-btn:hover {
+            background: #e9ecef;
+        }
+
+        .pagination-btn.active {
+            background: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #7f8c8d;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            color: #bdc3c7;
+        }
+
+        .empty-state h3 {
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 2% auto;
+            padding: 0;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e1e5e9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            margin: 0;
+            color: #2c3e50;
+            font-size: 1.5rem;
+        }
+
+        .close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #7f8c8d;
+            padding: 0.5rem;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .close:hover {
+            background: #ecf0f1;
+            color: #2c3e50;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 0.75rem;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.2s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .modal-footer {
+            padding: 1.5rem;
+            border-top: 1px solid #e1e5e9;
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #0056b3;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #545b62;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #1e7e34;
+        }
+
+        /* Detail View Styles */
+        .campaign-details {
+            padding: 1rem;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .detail-item.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .detail-item label {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.25rem;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .detail-item span,
+        .detail-item p {
+            color: #495057;
+            margin: 0;
+        }
+
+        .detail-item .positive {
+            color: #28a745;
+            font-weight: 600;
+        }
+
+        .detail-item .negative {
+            color: #dc3545;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .campaigns-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .campaigns-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .filters-row {
+                grid-template-columns: 1fr;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                width: 95%;
+                margin: 5% auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="campaigns-container">
+        <!-- Header -->
+        <div class="campaigns-header">
+            <div>
+                <h1 class="campaigns-title">Campanhas de Marketing</h1>
+                <p class="campaigns-description">Planeje, execute e analise suas campanhas de marketing</p>
+            </div>
+            <button id="addCampaignBtn" class="btn btn-success">
+                <i class="fas fa-plus"></i> Nova Campanha
+            </button>
+        </div>
+
+        <!-- Statistics -->
+        <div class="campaigns-stats">
+            <div class="stat-card">
+                <div class="stat-number" id="totalCampaignsCount">0</div>
+                <div class="stat-label">Total de Campanhas</div>
+            </div>
+            <div class="stat-card active">
+                <div class="stat-number" id="activeCampaignsCount">0</div>
+                <div class="stat-label">Campanhas Ativas</div>
+            </div>
+            <div class="stat-card completed">
+                <div class="stat-number" id="completedCampaignsCount">0</div>
+                <div class="stat-label">Concluídas</div>
+            </div>
+            <div class="stat-card planned">
+                <div class="stat-number" id="plannedCampaignsCount">0</div>
+                <div class="stat-label">Planejadas</div>
+            </div>
+            <div class="stat-card budget">
+                <div class="stat-number" id="totalBudget">R$ 0,00</div>
+                <div class="stat-label">Orçamento Total</div>
+            </div>
+            <div class="stat-card leads">
+                <div class="stat-number" id="totalLeadsGenerated">0</div>
+                <div class="stat-label">Leads Gerados</div>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="campaigns-filters">
+            <div class="filters-row">
+                <div class="filter-group">
+                    <label for="campaignsSearch">Buscar campanhas</label>
+                    <input type="text" id="campaignsSearch" placeholder="Digite o nome da campanha...">
+                </div>
+                <div class="filter-group">
+                    <label for="campaignsStatusFilter">Status</label>
+                    <select id="campaignsStatusFilter">
+                        <option value="all">Todos os Status</option>
+                        <option value="planned">Planejada</option>
+                        <option value="active">Ativa</option>
+                        <option value="paused">Pausada</option>
+                        <option value="completed">Concluída</option>
+                        <option value="cancelled">Cancelada</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="campaignsTypeFilter">Tipo</label>
+                    <select id="campaignsTypeFilter">
+                        <option value="all">Todos os Tipos</option>
+                        <option value="email">Email Marketing</option>
+                        <option value="social_media">Redes Sociais</option>
+                        <option value="google_ads">Google Ads</option>
+                        <option value="facebook_ads">Facebook Ads</option>
+                        <option value="content">Marketing de Conteúdo</option>
+                        <option value="seo">SEO</option>
+                        <option value="influencer">Influenciadores</option>
+                        <option value="event">Eventos</option>
+                        <option value="print">Mídia Impressa</option>
+                        <option value="radio">Rádio</option>
+                        <option value="tv">TV</option>
+                        <option value="outdoor">Outdoor</option>
+                        <option value="other">Outros</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="campaignsDateRangeFilter">Período</label>
+                    <select id="campaignsDateRangeFilter">
+                        <option value="all">Todos os Períodos</option>
+                        <option value="active">Ativas Agora</option>
+                        <option value="upcoming">Próximas</option>
+                        <option value="completed">Finalizadas</option>
+                        <option value="this_month">Este Mês</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="campaigns-content">
+            <div id="campaignsList">
+                <!-- Campaigns will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Campaign Modal -->
+    <div id="campaignModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="campaignModalTitle" class="modal-title">Nova Campanha</h2>
+                <button class="close">&times;</button>
+            </div>
+            <form id="campaignForm">
+                <div class="modal-body">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="campaignName">Nome da Campanha *</label>
+                            <input type="text" id="campaignName" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="campaignType">Tipo *</label>
+                            <select id="campaignType" name="type" required>
+                                <option value="">Selecione o tipo</option>
+                                <option value="email">Email Marketing</option>
+                                <option value="social_media">Redes Sociais</option>
+                                <option value="google_ads">Google Ads</option>
+                                <option value="facebook_ads">Facebook Ads</option>
+                                <option value="content">Marketing de Conteúdo</option>
+                                <option value="seo">SEO</option>
+                                <option value="influencer">Influenciadores</option>
+                                <option value="event">Eventos</option>
+                                <option value="print">Mídia Impressa</option>
+                                <option value="radio">Rádio</option>
+                                <option value="tv">TV</option>
+                                <option value="outdoor">Outdoor</option>
+                                <option value="other">Outros</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="campaignStartDate">Data de Início *</label>
+                            <input type="date" id="campaignStartDate" name="start_date" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="campaignEndDate">Data de Fim</label>
+                            <input type="date" id="campaignEndDate" name="end_date">
+                        </div>
+                        <div class="form-group">
+                            <label for="campaignBudget">Orçamento (R$)</label>
+                            <input type="number" id="campaignBudget" name="budget" step="0.01" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="campaignStatus">Status</label>
+                            <select id="campaignStatus" name="status">
+                                <option value="planned">Planejada</option>
+                                <option value="active">Ativa</option>
+                                <option value="paused">Pausada</option>
+                                <option value="completed">Concluída</option>
+                                <option value="cancelled">Cancelada</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="campaignLeadsGenerated">Leads Gerados</label>
+                            <input type="number" id="campaignLeadsGenerated" name="leads_generated" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="campaignRevenue">Receita (R$)</label>
+                            <input type="number" id="campaignRevenue" name="revenue" step="0.01" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="campaignSpent">Valor Gasto (R$)</label>
+                            <input type="number" id="campaignSpent" name="spent" step="0.01" min="0">
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="campaignTargetAudience">Público-Alvo</label>
+                            <textarea id="campaignTargetAudience" name="target_audience" placeholder="Descreva o público-alvo desta campanha..."></textarea>
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="campaignObjectives">Objetivos</label>
+                            <textarea id="campaignObjectives" name="objectives" placeholder="Quais são os objetivos desta campanha?"></textarea>
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="campaignDescription">Descrição</label>
+                            <textarea id="campaignDescription" name="description" placeholder="Descreva os detalhes da campanha..."></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="cancelCampaignBtn" class="btn btn-secondary">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar Campanha</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Close modal when clicking outside or on close button
+        document.addEventListener('DOMContentLoaded', function() {
+            const modal = document.getElementById('campaignModal');
+            const closeBtn = modal.querySelector('.close');
+            
+            closeBtn.addEventListener('click', () => {
+                campaignsModule.hideCampaignForm();
+            });
+            
+            window.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    campaignsModule.hideCampaignForm();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
