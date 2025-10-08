@@ -42,7 +42,14 @@
     ],
     "experiments": {
       "typedRoutes": true,
-      "reactCompiler": true
-    }
+      "reactCompiler": false
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "717b9ed6-9f95-459b-ada2-f592f2be1f3a"
+      }
+    },
+    "owner": "coffeesolucoes"
   }
 }
