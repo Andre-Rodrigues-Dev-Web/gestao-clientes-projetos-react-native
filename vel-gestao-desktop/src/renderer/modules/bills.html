@@ -1,0 +1,291 @@
+<div class="module-header">
+    <div class="module-title">
+        <h1><i class="fas fa-file-invoice-dollar"></i> Contas a Pagar</h1>
+        <p>Gerencie suas contas a pagar, controle vencimentos e mantenha suas finanças em dia</p>
+    </div>
+    <div class="module-actions">
+        <button class="btn btn-primary" id="addBillBtn">
+            <i class="fas fa-plus"></i> Nova Conta
+        </button>
+    </div>
+</div>
+
+<div class="module-stats">
+    <div class="stat-card">
+        <div class="stat-icon">
+            <i class="fas fa-file-invoice-dollar"></i>
+        </div>
+        <div class="stat-info">
+            <h3 id="totalBillsCount">0</h3>
+            <p>Total de Contas</p>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon warning">
+            <i class="fas fa-clock"></i>
+        </div>
+        <div class="stat-info">
+            <h3 id="pendingBillsCount">0</h3>
+            <p>Contas Pendentes</p>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon success">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <div class="stat-info">
+            <h3 id="paidBillsCount">0</h3>
+            <p>Contas Pagas</p>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon danger">
+            <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        <div class="stat-info">
+            <h3 id="overdueBillsCount">0</h3>
+            <p>Contas Vencidas</p>
+        </div>
+    </div>
+    <div class="stat-card wide">
+        <div class="stat-icon info">
+            <i class="fas fa-dollar-sign"></i>
+        </div>
+        <div class="stat-info">
+            <h3 id="totalAmountPending">R$ 0,00</h3>
+            <p>Total Pendente</p>
+        </div>
+    </div>
+</div>
+
+<div class="module-filters">
+    <div class="filter-group">
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="billsSearch" placeholder="Buscar por descrição, fornecedor ou categoria...">
+        </div>
+    </div>
+    <div class="filter-group">
+        <select id="billsStatusFilter">
+            <option value="all">Todos os Status</option>
+            <option value="pending">Pendente</option>
+            <option value="paid">Paga</option>
+            <option value="cancelled">Cancelada</option>
+        </select>
+    </div>
+    <div class="filter-group">
+        <select id="billsCategoryFilter">
+            <option value="all">Todas as Categorias</option>
+            <option value="Aluguel">Aluguel</option>
+            <option value="Energia">Energia</option>
+            <option value="Água">Água</option>
+            <option value="Internet">Internet</option>
+            <option value="Telefone">Telefone</option>
+            <option value="Fornecedores">Fornecedores</option>
+            <option value="Impostos">Impostos</option>
+            <option value="Salários">Salários</option>
+            <option value="Marketing">Marketing</option>
+            <option value="Equipamentos">Equipamentos</option>
+            <option value="Outros">Outros</option>
+        </select>
+    </div>
+    <div class="filter-group">
+        <select id="billsDateRangeFilter">
+            <option value="all">Todos os Períodos</option>
+            <option value="overdue">Vencidas</option>
+            <option value="today">Vence Hoje</option>
+            <option value="week">Próximos 7 dias</option>
+            <option value="month">Próximos 30 dias</option>
+        </select>
+    </div>
+</div>
+
+<div class="module-content">
+    <div id="billsList">
+        <!-- Lista de contas será renderizada aqui -->
+    </div>
+</div>
+
+<!-- Modal de Conta -->
+<div id="billModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="billModalTitle">Nova Conta</h2>
+            <button class="modal-close" onclick="billsModule.hideBillForm()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <form id="billForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="billDescription">Descrição *</label>
+                        <input type="text" id="billDescription" name="description" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="billSupplier">Fornecedor *</label>
+                        <input type="text" id="billSupplier" name="supplier" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="billCategory">Categoria *</label>
+                        <select id="billCategory" name="category" required>
+                            <option value="">Selecione uma categoria...</option>
+                            <option value="Aluguel">Aluguel</option>
+                            <option value="Energia">Energia</option>
+                            <option value="Água">Água</option>
+                            <option value="Internet">Internet</option>
+                            <option value="Telefone">Telefone</option>
+                            <option value="Fornecedores">Fornecedores</option>
+                            <option value="Impostos">Impostos</option>
+                            <option value="Salários">Salários</option>
+                            <option value="Marketing">Marketing</option>
+                            <option value="Equipamentos">Equipamentos</option>
+                            <option value="Outros">Outros</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="billAmount">Valor *</label>
+                        <input type="number" id="billAmount" name="amount" step="0.01" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="billDueDate">Data de Vencimento *</label>
+                        <input type="date" id="billDueDate" name="due_date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="billStatus">Status</label>
+                        <select id="billStatus" name="status">
+                            <option value="pending">Pendente</option>
+                            <option value="paid">Paga</option>
+                            <option value="cancelled">Cancelada</option>
+                        </select>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="billNotes">Observações</label>
+                        <textarea id="billNotes" name="notes" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelBillBtn">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+.overdue-row {
+    background-color: var(--danger-color)10;
+    border-left: 3px solid var(--danger-color);
+}
+
+.due-today-row {
+    background-color: var(--warning-color)10;
+    border-left: 3px solid var(--warning-color);
+}
+
+.bill-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.bill-description {
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+
+.bill-notes {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+.category-badge {
+    padding: 4px 8px;
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    font-weight: 500;
+    background: var(--primary-color)20;
+    color: var(--primary-color);
+}
+
+.amount-cell {
+    text-align: right;
+}
+
+.amount {
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.due-date {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+}
+
+.due-date.overdue {
+    color: var(--danger-color);
+}
+
+.due-date.due-today {
+    color: var(--warning-color);
+}
+
+.overdue-label, .due-today-label {
+    padding: 2px 6px;
+    border-radius: var(--radius-sm);
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.overdue-label {
+    background: var(--danger-color);
+    color: white;
+}
+
+.due-today-label {
+    background: var(--warning-color);
+    color: white;
+}
+
+.status-badge {
+    padding: 4px 8px;
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.status-badge.pending {
+    background: var(--warning-color)20;
+    color: var(--warning-color);
+}
+
+.status-badge.paid {
+    background: var(--success-color)20;
+    color: var(--success-color);
+}
+
+.status-badge.cancelled {
+    background: var(--secondary-color)20;
+    color: var(--secondary-color);
+}
+
+.status-badge.overdue {
+    background: var(--danger-color);
+    color: white;
+}
+
+.stat-card.wide {
+    grid-column: span 2;
+}
+
+@media (max-width: 768px) {
+    .stat-card.wide {
+        grid-column: span 1;
+    }
+}
+</style>

@@ -1,0 +1,175 @@
+<div class="module-header">
+    <div class="module-title">
+        <h1><i class="fas fa-users"></i> Gestão de Clientes</h1>
+        <p>Gerencie seus clientes e mantenha suas informações atualizadas</p>
+    </div>
+    <div class="module-actions">
+        <button class="btn btn-primary" id="addClientBtn">
+            <i class="fas fa-plus"></i> Novo Cliente
+        </button>
+    </div>
+</div>
+
+<div class="module-stats">
+    <div class="stat-card">
+        <div class="stat-icon">
+            <i class="fas fa-users"></i>
+        </div>
+        <div class="stat-info">
+            <h3 id="totalClientsCount">0</h3>
+            <p>Total de Clientes</p>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon success">
+            <i class="fas fa-user-check"></i>
+        </div>
+        <div class="stat-info">
+            <h3 id="activeClientsCount">0</h3>
+            <p>Clientes Ativos</p>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon warning">
+            <i class="fas fa-user-times"></i>
+        </div>
+        <div class="stat-info">
+            <h3 id="inactiveClientsCount">0</h3>
+            <p>Clientes Inativos</p>
+        </div>
+    </div>
+</div>
+
+<div class="module-filters">
+    <div class="filter-group">
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="clientsSearch" placeholder="Buscar por nome, email ou empresa...">
+        </div>
+    </div>
+    <div class="filter-group">
+        <select id="clientsStatusFilter">
+            <option value="all">Todos os Status</option>
+            <option value="active">Ativo</option>
+            <option value="inactive">Inativo</option>
+        </select>
+    </div>
+    <div class="filter-group">
+        <select id="clientsTypeFilter">
+            <option value="all">Todos os Tipos</option>
+            <option value="individual">Pessoa Física</option>
+            <option value="company">Pessoa Jurídica</option>
+        </select>
+    </div>
+</div>
+
+<div class="module-content">
+    <div id="clientsList">
+        <!-- Lista de clientes será renderizada aqui -->
+    </div>
+</div>
+
+<!-- Modal de Cliente -->
+<div id="clientModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="clientModalTitle">Novo Cliente</h2>
+            <button class="modal-close" onclick="clientsModule.hideClientForm()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <form id="clientForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="clientName">Nome *</label>
+                        <input type="text" id="clientName" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="clientEmail">Email *</label>
+                        <input type="email" id="clientEmail" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="clientPhone">Telefone *</label>
+                        <input type="tel" id="clientPhone" name="phone" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="clientType">Tipo *</label>
+                        <select id="clientType" name="type" required>
+                            <option value="individual">Pessoa Física</option>
+                            <option value="company">Pessoa Jurídica</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="clientDocument">CPF/CNPJ *</label>
+                        <input type="text" id="clientDocument" name="document" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="clientCompany">Empresa</label>
+                        <input type="text" id="clientCompany" name="company">
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="clientAddress">Endereço</label>
+                        <input type="text" id="clientAddress" name="address">
+                    </div>
+                    <div class="form-group">
+                        <label for="clientCity">Cidade</label>
+                        <input type="text" id="clientCity" name="city">
+                    </div>
+                    <div class="form-group">
+                        <label for="clientState">Estado</label>
+                        <select id="clientState" name="state">
+                            <option value="">Selecione...</option>
+                            <option value="AC">Acre</option>
+                            <option value="AL">Alagoas</option>
+                            <option value="AP">Amapá</option>
+                            <option value="AM">Amazonas</option>
+                            <option value="BA">Bahia</option>
+                            <option value="CE">Ceará</option>
+                            <option value="DF">Distrito Federal</option>
+                            <option value="ES">Espírito Santo</option>
+                            <option value="GO">Goiás</option>
+                            <option value="MA">Maranhão</option>
+                            <option value="MT">Mato Grosso</option>
+                            <option value="MS">Mato Grosso do Sul</option>
+                            <option value="MG">Minas Gerais</option>
+                            <option value="PA">Pará</option>
+                            <option value="PB">Paraíba</option>
+                            <option value="PR">Paraná</option>
+                            <option value="PE">Pernambuco</option>
+                            <option value="PI">Piauí</option>
+                            <option value="RJ">Rio de Janeiro</option>
+                            <option value="RN">Rio Grande do Norte</option>
+                            <option value="RS">Rio Grande do Sul</option>
+                            <option value="RO">Rondônia</option>
+                            <option value="RR">Roraima</option>
+                            <option value="SC">Santa Catarina</option>
+                            <option value="SP">São Paulo</option>
+                            <option value="SE">Sergipe</option>
+                            <option value="TO">Tocantins</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="clientZipCode">CEP</label>
+                        <input type="text" id="clientZipCode" name="zip_code">
+                    </div>
+                    <div class="form-group">
+                        <label for="clientStatus">Status</label>
+                        <select id="clientStatus" name="status">
+                            <option value="active">Ativo</option>
+                            <option value="inactive">Inativo</option>
+                        </select>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="clientNotes">Observações</label>
+                        <textarea id="clientNotes" name="notes" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelClientBtn">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

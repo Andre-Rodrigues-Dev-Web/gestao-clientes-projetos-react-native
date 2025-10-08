@@ -1,0 +1,284 @@
+<div class="module-header">
+    <div class="module-title">
+        <h1><i class="fas fa-project-diagram"></i> Gestão de Projetos</h1>
+        <p>Gerencie seus projetos, acompanhe o progresso e organize suas entregas</p>
+    </div>
+    <div class="module-actions">
+        <button class="btn btn-primary" id="addProjectBtn">
+            <i class="fas fa-plus"></i> Novo Projeto
+        </button>
+    </div>
+</div>
+
+<div class="module-stats">
+    <div class="stat-card">
+        <div class="stat-icon">
+            <i class="fas fa-project-diagram"></i>
+        </div>
+        <div class="stat-info">
+            <h3 id="totalProjectsCount">0</h3>
+            <p>Total de Projetos</p>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon warning">
+            <i class="fas fa-play-circle"></i>
+        </div>
+        <div class="stat-info">
+            <h3 id="activeProjectsCount">0</h3>
+            <p>Projetos Ativos</p>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon success">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <div class="stat-info">
+            <h3 id="completedProjectsCount">0</h3>
+            <p>Projetos Concluídos</p>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon secondary">
+            <i class="fas fa-pause-circle"></i>
+        </div>
+        <div class="stat-info">
+            <h3 id="onHoldProjectsCount">0</h3>
+            <p>Projetos Pausados</p>
+        </div>
+    </div>
+</div>
+
+<div class="module-filters">
+    <div class="filter-group">
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="projectsSearch" placeholder="Buscar por nome, descrição ou cliente...">
+        </div>
+    </div>
+    <div class="filter-group">
+        <select id="projectsStatusFilter">
+            <option value="all">Todos os Status</option>
+            <option value="planning">Planejamento</option>
+            <option value="in-progress">Em Andamento</option>
+            <option value="completed">Concluído</option>
+            <option value="on-hold">Pausado</option>
+            <option value="cancelled">Cancelado</option>
+        </select>
+    </div>
+    <div class="filter-group">
+        <select id="projectsClientFilter">
+            <option value="all">Todos os Clientes</option>
+            <!-- Clientes serão populados dinamicamente -->
+        </select>
+    </div>
+</div>
+
+<div class="module-content">
+    <div id="projectsList">
+        <!-- Lista de projetos será renderizada aqui -->
+    </div>
+</div>
+
+<!-- Modal de Projeto -->
+<div id="projectModal" class="modal">
+    <div class="modal-content large">
+        <div class="modal-header">
+            <h2 id="projectModalTitle">Novo Projeto</h2>
+            <button class="modal-close" onclick="projectsModule.hideProjectForm()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <form id="projectForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="projectName">Nome do Projeto *</label>
+                        <input type="text" id="projectName" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="projectClient">Cliente</label>
+                        <select id="projectClient" name="client_id">
+                            <option value="">Selecione um cliente...</option>
+                            <!-- Clientes serão populados dinamicamente -->
+                        </select>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="projectDescription">Descrição *</label>
+                        <textarea id="projectDescription" name="description" rows="3" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="projectStartDate">Data de Início *</label>
+                        <input type="date" id="projectStartDate" name="start_date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="projectEndDate">Data de Fim</label>
+                        <input type="date" id="projectEndDate" name="end_date">
+                    </div>
+                    <div class="form-group">
+                        <label for="projectBudget">Orçamento</label>
+                        <input type="number" id="projectBudget" name="budget" step="0.01" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="projectStatus">Status</label>
+                        <select id="projectStatus" name="status">
+                            <option value="planning">Planejamento</option>
+                            <option value="in-progress">Em Andamento</option>
+                            <option value="completed">Concluído</option>
+                            <option value="on-hold">Pausado</option>
+                            <option value="cancelled">Cancelado</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="projectPriority">Prioridade</label>
+                        <select id="projectPriority" name="priority">
+                            <option value="low">Baixa</option>
+                            <option value="medium">Média</option>
+                            <option value="high">Alta</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="projectProgress">Progresso (%)</label>
+                        <input type="range" id="projectProgress" name="progress" min="0" max="100" value="0" 
+                               oninput="document.getElementById('progressValue').textContent = this.value + '%'">
+                        <div class="progress-display">
+                            <span id="progressValue">0%</span>
+                        </div>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="projectNotes">Observações</label>
+                        <textarea id="projectNotes" name="notes" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelProjectBtn">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+.projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.project-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    transition: all 0.2s ease;
+}
+
+.project-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.project-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+}
+
+.project-title h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+}
+
+.project-badges {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.priority-badge {
+    padding: 4px 8px;
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.priority-badge.success {
+    background: var(--success-color)20;
+    color: var(--success-color);
+}
+
+.priority-badge.warning {
+    background: var(--warning-color)20;
+    color: var(--warning-color);
+}
+
+.priority-badge.danger {
+    background: var(--danger-color)20;
+    color: var(--danger-color);
+}
+
+.project-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.project-info {
+    margin-bottom: 16px;
+}
+
+.project-description {
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin-bottom: 12px;
+}
+
+.project-details {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.detail-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: var(--text-muted);
+}
+
+.detail-item i {
+    width: 16px;
+    color: var(--primary-color);
+}
+
+.project-progress {
+    border-top: 1px solid var(--border-light);
+    padding-top: 16px;
+}
+
+.progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.progress-display {
+    text-align: center;
+    margin-top: 8px;
+    font-weight: 500;
+    color: var(--primary-color);
+}
+
+.modal-content.large {
+    max-width: 800px;
+}
+</style>

@@ -1,0 +1,410 @@
+<div class="module-header">
+    <div class="module-title">
+        <h1><i class="fas fa-calendar-alt"></i> Agenda de Reuniões</h1>
+        <p>Gerencie suas reuniões, agende compromissos e mantenha sua agenda organizada</p>
+    </div>
+    <div class="module-actions">
+        <div class="view-toggle">
+            <button class="btn btn-outline active" id="listViewBtn">
+                <i class="fas fa-list"></i> Lista
+            </button>
+            <button class="btn btn-outline" id="calendarViewBtn">
+                <i class="fas fa-calendar"></i> Calendário
+            </button>
+        </div>
+        <button class="btn btn-primary" id="addMeetingBtn">
+            <i class="fas fa-plus"></i> Nova Reunião
+        </button>
+    </div>
+</div>
+
+<div class="module-stats">
+    <div class="stat-card">
+        <div class="stat-icon">
+            <i class="fas fa-calendar-alt"></i>
+        </div>
+        <div class="stat-info">
+            <h3 id="totalMeetingsCount">0</h3>
+            <p>Total de Reuniões</p>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon warning">
+            <i class="fas fa-clock"></i>
+        </div>
+        <div class="stat-info">
+            <h3 id="scheduledMeetingsCount">0</h3>
+            <p>Agendadas</p>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon success">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <div class="stat-info">
+            <h3 id="completedMeetingsCount">0</h3>
+            <p>Realizadas</p>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon info">
+            <i class="fas fa-calendar-check"></i>
+        </div>
+        <div class="stat-info">
+            <h3 id="upcomingMeetingsCount">0</h3>
+            <p>Próximas</p>
+        </div>
+    </div>
+</div>
+
+<div class="module-filters">
+    <div class="filter-group">
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="meetingsSearch" placeholder="Buscar por título, descrição ou local...">
+        </div>
+    </div>
+    <div class="filter-group">
+        <select id="meetingsStatusFilter">
+            <option value="all">Todos os Status</option>
+            <option value="scheduled">Agendada</option>
+            <option value="completed">Realizada</option>
+            <option value="cancelled">Cancelada</option>
+        </select>
+    </div>
+    <div class="filter-group">
+        <select id="meetingsClientFilter">
+            <option value="all">Todos os Clientes</option>
+        </select>
+    </div>
+    <div class="filter-group">
+        <select id="meetingsDateRangeFilter">
+            <option value="all">Todos os Períodos</option>
+            <option value="today">Hoje</option>
+            <option value="week">Próximos 7 dias</option>
+            <option value="month">Próximos 30 dias</option>
+            <option value="past">Passadas</option>
+        </select>
+    </div>
+</div>
+
+<div class="module-content">
+    <div id="meetingsList">
+        <!-- Lista de reuniões ou calendário será renderizado aqui -->
+    </div>
+</div>
+
+<!-- Modal de Reunião -->
+<div id="meetingModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="meetingModalTitle">Nova Reunião</h2>
+            <button class="modal-close" onclick="meetingsModule.hideMeetingForm()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <form id="meetingForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="meetingTitle">Título *</label>
+                        <input type="text" id="meetingTitle" name="title" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="meetingClient">Cliente *</label>
+                        <select id="meetingClient" name="client_id" required>
+                            <option value="">Selecione um cliente...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="meetingDate">Data *</label>
+                        <input type="date" id="meetingDate" name="date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="meetingTime">Horário *</label>
+                        <input type="time" id="meetingTime" name="time" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="meetingLocation">Local</label>
+                        <input type="text" id="meetingLocation" name="location" placeholder="Ex: Escritório, Online, Cliente...">
+                    </div>
+                    <div class="form-group">
+                        <label for="meetingStatus">Status</label>
+                        <select id="meetingStatus" name="status">
+                            <option value="scheduled">Agendada</option>
+                            <option value="completed">Realizada</option>
+                            <option value="cancelled">Cancelada</option>
+                        </select>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="meetingDescription">Descrição</label>
+                        <textarea id="meetingDescription" name="description" rows="4" placeholder="Descreva o objetivo da reunião, tópicos a serem discutidos, etc."></textarea>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelMeetingBtn">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+.view-toggle {
+    display: flex;
+    gap: 8px;
+    margin-right: 16px;
+}
+
+.view-toggle .btn {
+    padding: 8px 16px;
+    border: 1px solid var(--border-color);
+    background: white;
+    color: var(--text-color);
+    border-radius: var(--radius-sm);
+    transition: all 0.2s;
+}
+
+.view-toggle .btn.active {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.upcoming-row {
+    background-color: var(--info-color)10;
+    border-left: 3px solid var(--info-color);
+}
+
+.overdue-row {
+    background-color: var(--warning-color)10;
+    border-left: 3px solid var(--warning-color);
+}
+
+.meeting-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.meeting-title {
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+
+.meeting-description {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+.meeting-datetime {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.meeting-date {
+    font-weight: 500;
+}
+
+.meeting-time {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.status-badge {
+    padding: 4px 8px;
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.status-badge.scheduled {
+    background: var(--info-color)20;
+    color: var(--info-color);
+}
+
+.status-badge.completed {
+    background: var(--success-color)20;
+    color: var(--success-color);
+}
+
+.status-badge.cancelled {
+    background: var(--secondary-color)20;
+    color: var(--secondary-color);
+}
+
+/* Estilos do Calendário */
+.calendar-container {
+    background: white;
+    border-radius: var(--radius-md);
+    padding: 24px;
+    box-shadow: var(--shadow-sm);
+}
+
+.calendar-header {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.calendar-header h3 {
+    margin: 0;
+    color: var(--text-color);
+    font-size: 24px;
+}
+
+.calendar-grid {
+    display: flex;
+    flex-direction: column;
+}
+
+.calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1px;
+    margin-bottom: 8px;
+}
+
+.weekday {
+    padding: 12px;
+    text-align: center;
+    font-weight: 600;
+    color: var(--text-muted);
+    background: var(--background-light);
+    border-radius: var(--radius-sm);
+}
+
+.calendar-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1px;
+    background: var(--border-color);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+}
+
+.calendar-day {
+    background: white;
+    min-height: 120px;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.calendar-day.empty {
+    background: var(--background-light);
+}
+
+.calendar-day.today {
+    background: var(--primary-color)10;
+    border: 2px solid var(--primary-color);
+}
+
+.calendar-day.has-meetings {
+    background: var(--success-color)05;
+}
+
+.day-number {
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: var(--text-color);
+}
+
+.day-meetings {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.meeting-item {
+    background: var(--primary-color);
+    color: white;
+    padding: 2px 4px;
+    border-radius: 2px;
+    font-size: 10px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.meeting-item:hover {
+    opacity: 0.8;
+}
+
+.meeting-item.completed {
+    background: var(--success-color);
+}
+
+.meeting-item.cancelled {
+    background: var(--secondary-color);
+}
+
+.meeting-time {
+    font-weight: 600;
+    margin-right: 4px;
+}
+
+.meeting-title {
+    flex: 1;
+}
+
+.more-meetings {
+    font-size: 9px;
+    color: var(--text-muted);
+    text-align: center;
+    margin-top: 2px;
+}
+
+.detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.detail-item.full-width {
+    grid-column: span 2;
+}
+
+.detail-item label {
+    font-weight: 600;
+    color: var(--text-muted);
+    font-size: 12px;
+    text-transform: uppercase;
+}
+
+.detail-item span,
+.detail-item p {
+    color: var(--text-color);
+    margin: 0;
+}
+
+@media (max-width: 768px) {
+    .calendar-day {
+        min-height: 80px;
+        padding: 4px;
+    }
+    
+    .meeting-item {
+        font-size: 8px;
+        padding: 1px 2px;
+    }
+    
+    .detail-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .detail-item.full-width {
+        grid-column: span 1;
+    }
+}
+</style>

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vel Gestão Desktop</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="app">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <div class="logo">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Vel Gestão</span>
+                </div>
+            </div>
+            <div class="header-center">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Buscar clientes, projetos..." id="globalSearch">
+                </div>
+            </div>
+            <div class="header-right">
+                <button class="btn-icon" id="notificationsBtn">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge">3</span>
+                </button>
+                <div class="user-menu">
+                    <img src="https://via.placeholder.com/32" alt="User" class="user-avatar">
+                    <span>Admin</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+            </div>
+        </header>
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <nav class="nav-menu">
+                <div class="nav-section">
+                    <h3>Principal</h3>
+                    <ul>
+                        <li>
+                            <a href="#" class="nav-link active" data-module="dashboard">
+                                <i class="fas fa-tachometer-alt"></i>
+                                <span>Dashboard</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="nav-section">
+                    <h3>Gestão</h3>
+                    <ul>
+                        <li>
+                            <a href="#" class="nav-link" data-module="clients">
+                                <i class="fas fa-users"></i>
+                                <span>Clientes</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="nav-link" data-module="projects">
+                                <i class="fas fa-project-diagram"></i>
+                                <span>Projetos</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="nav-link" data-module="bills">
+                                <i class="fas fa-file-invoice-dollar"></i>
+                                <span>Contas a Pagar</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="nav-section">
+                    <h3>Agenda & Marketing</h3>
+                    <ul>
+                        <li>
+                            <a href="#" class="nav-link" data-module="meetings">
+                                <i class="fas fa-calendar-alt"></i>
+                                <span>Reuniões</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="nav-link" data-module="campaigns">
+                                <i class="fas fa-bullhorn"></i>
+                                <span>Campanhas</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="nav-link" data-module="leads">
+                                <i class="fas fa-user-plus"></i>
+                                <span>Leads</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div id="content-area">
+                <!-- Dashboard Content -->
+                <div id="dashboard-content" class="module-content active">
+                    <div class="page-header">
+                        <h1>Dashboard</h1>
+                        <p>Visão geral do seu negócio</p>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon clients">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3 id="totalClients">0</h3>
+                                <p>Clientes Ativos</p>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-icon projects">
+                                <i class="fas fa-project-diagram"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3 id="totalProjects">0</h3>
+                                <p>Projetos em Andamento</p>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-icon bills">
+                                <i class="fas fa-file-invoice-dollar"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3 id="pendingBills">0</h3>
+                                <p>Contas Pendentes</p>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-icon leads">
+                                <i class="fas fa-user-plus"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3 id="totalLeads">0</h3>
+                                <p>Leads Ativos</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-grid">
+                        <div class="dashboard-card">
+                            <div class="card-header">
+                                <h3>Próximas Reuniões</h3>
+                                <a href="#" class="view-all">Ver todas</a>
+                            </div>
+                            <div class="card-content">
+                                <div id="upcomingMeetings" class="meetings-list">
+                                    <div class="empty-state">
+                                        <i class="fas fa-calendar-alt"></i>
+                                        <p>Nenhuma reunião agendada</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="dashboard-card">
+                            <div class="card-header">
+                                <h3>Contas Vencendo</h3>
+                                <a href="#" class="view-all">Ver todas</a>
+                            </div>
+                            <div class="card-content">
+                                <div id="dueBills" class="bills-list">
+                                    <div class="empty-state">
+                                        <i class="fas fa-file-invoice-dollar"></i>
+                                        <p>Nenhuma conta vencendo</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="dashboard-card">
+                            <div class="card-header">
+                                <h3>Projetos Recentes</h3>
+                                <a href="#" class="view-all">Ver todos</a>
+                            </div>
+                            <div class="card-content">
+                                <div id="recentProjects" class="projects-list">
+                                    <div class="empty-state">
+                                        <i class="fas fa-project-diagram"></i>
+                                        <p>Nenhum projeto recente</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="dashboard-card">
+                            <div class="card-header">
+                                <h3>Leads Recentes</h3>
+                                <a href="#" class="view-all">Ver todos</a>
+                            </div>
+                            <div class="card-content">
+                                <div id="recentLeads" class="leads-list">
+                                    <div class="empty-state">
+                                        <i class="fas fa-user-plus"></i>
+                                        <p>Nenhum lead recente</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Placeholder for other modules -->
+                <div id="clients-content" class="module-content"></div>
+                <div id="projects-content" class="module-content"></div>
+                <div id="bills-content" class="module-content"></div>
+                <div id="meetings-content" class="module-content"></div>
+                <div id="campaigns-content" class="module-content"></div>
+                <div id="leads-content" class="module-content"></div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal Container -->
+    <div id="modal-container"></div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay hidden">
+        <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Carregando...</p>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/clients.js"></script>
+    <script src="js/projects.js"></script>
+    <script src="js/bills.js"></script>
+    <script src="js/meetings.js"></script>
+    <script src="js/campaigns.js"></script>
+    <script src="js/leads.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
