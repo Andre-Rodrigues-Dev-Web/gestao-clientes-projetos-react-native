@@ -1,0 +1,434 @@
+<div class="module-header">
+    <div class="module-title">
+        <h1><i class="fas fa-user-plus"></i> Gestão de Leads</h1>
+        <p>Capture, qualifique e converta seus leads em clientes</p>
+    </div>
+    <div class="module-actions">
+        <button class="btn btn-primary" id="addLeadBtn">
+            <i class="fas fa-plus"></i> Novo Lead
+        </button>
+    </div>
+</div>
+
+<div class="module-stats">
+    <div class="stat-card">
+        <div class="stat-icon">
+            <i class="fas fa-user-plus"></i>
+        </div>
+        <div class="stat-info">
+            <h3 id="totalLeadsCount">0</h3>
+            <p>Total de Leads</p>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon info">
+            <i class="fas fa-star"></i>
+        </div>
+        <div class="stat-info">
+            <h3 id="newLeadsCount">0</h3>
+            <p>Novos Leads</p>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon warning">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <div class="stat-info">
+            <h3 id="qualifiedLeadsCount">0</h3>
+            <p>Qualificados</p>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon success">
+            <i class="fas fa-user-check"></i>
+        </div>
+        <div class="stat-info">
+            <h3 id="convertedLeadsCount">0</h3>
+            <p>Convertidos</p>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon primary">
+            <i class="fas fa-percentage"></i>
+        </div>
+        <div class="stat-info">
+            <h3 id="conversionRate">0%</h3>
+            <p>Taxa de Conversão</p>
+        </div>
+    </div>
+</div>
+
+<div class="module-filters">
+    <div class="filter-group">
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="leadsSearch" placeholder="Buscar por nome, email, telefone ou empresa...">
+        </div>
+    </div>
+    <div class="filter-group">
+        <select id="leadsStatusFilter">
+            <option value="all">Todos os Status</option>
+            <option value="new">Novo</option>
+            <option value="contacted">Contatado</option>
+            <option value="qualified">Qualificado</option>
+            <option value="proposal">Proposta</option>
+            <option value="negotiation">Negociação</option>
+            <option value="converted">Convertido</option>
+            <option value="lost">Perdido</option>
+        </select>
+    </div>
+    <div class="filter-group">
+        <select id="leadsSourceFilter">
+            <option value="all">Todas as Origens</option>
+            <option value="website">Website</option>
+            <option value="social_media">Redes Sociais</option>
+            <option value="email_marketing">Email Marketing</option>
+            <option value="referral">Indicação</option>
+            <option value="cold_call">Cold Call</option>
+            <option value="event">Evento</option>
+            <option value="advertisement">Anúncio</option>
+            <option value="other">Outros</option>
+        </select>
+    </div>
+    <div class="filter-group">
+        <select id="leadsPriorityFilter">
+            <option value="all">Todas as Prioridades</option>
+            <option value="low">Baixa</option>
+            <option value="medium">Média</option>
+            <option value="high">Alta</option>
+            <option value="urgent">Urgente</option>
+        </select>
+    </div>
+</div>
+
+<div class="module-content">
+    <div id="leadsList">
+        <!-- Lista de leads será renderizada aqui -->
+    </div>
+</div>
+
+<!-- Modal de Lead -->
+<div id="leadModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="leadModalTitle">Novo Lead</h2>
+            <button class="modal-close" onclick="leadsModule.hideLeadForm()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <form id="leadForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="leadName">Nome *</label>
+                        <input type="text" id="leadName" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="leadCompany">Empresa</label>
+                        <input type="text" id="leadCompany" name="company">
+                    </div>
+                    <div class="form-group">
+                        <label for="leadEmail">Email</label>
+                        <input type="email" id="leadEmail" name="email">
+                    </div>
+                    <div class="form-group">
+                        <label for="leadPhone">Telefone</label>
+                        <input type="tel" id="leadPhone" name="phone">
+                    </div>
+                    <div class="form-group">
+                        <label for="leadSource">Origem *</label>
+                        <select id="leadSource" name="source" required>
+                            <option value="">Selecione a origem...</option>
+                            <option value="website">Website</option>
+                            <option value="social_media">Redes Sociais</option>
+                            <option value="email_marketing">Email Marketing</option>
+                            <option value="referral">Indicação</option>
+                            <option value="cold_call">Cold Call</option>
+                            <option value="event">Evento</option>
+                            <option value="advertisement">Anúncio</option>
+                            <option value="other">Outros</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="leadStatus">Status</label>
+                        <select id="leadStatus" name="status">
+                            <option value="new">Novo</option>
+                            <option value="contacted">Contatado</option>
+                            <option value="qualified">Qualificado</option>
+                            <option value="proposal">Proposta</option>
+                            <option value="negotiation">Negociação</option>
+                            <option value="converted">Convertido</option>
+                            <option value="lost">Perdido</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="leadPriority">Prioridade</label>
+                        <select id="leadPriority" name="priority">
+                            <option value="low">Baixa</option>
+                            <option value="medium">Média</option>
+                            <option value="high">Alta</option>
+                            <option value="urgent">Urgente</option>
+                        </select>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="leadNotes">Observações</label>
+                        <textarea id="leadNotes" name="notes" rows="4" placeholder="Informações adicionais sobre o lead, interesse demonstrado, etc."></textarea>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelLeadBtn">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+.lead-row {
+    transition: all 0.2s;
+}
+
+.lead-row.high {
+    border-left: 3px solid var(--warning-color);
+}
+
+.lead-row.urgent {
+    border-left: 3px solid var(--danger-color);
+    background-color: var(--danger-color)05;
+}
+
+.lead-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.lead-name {
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+
+.lead-company {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+.contact-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.lead-email,
+.lead-phone {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+}
+
+.lead-email i,
+.lead-phone i {
+    width: 12px;
+    color: var(--text-muted);
+}
+
+.source-badge {
+    padding: 4px 8px;
+    border-radius: var(--radius-sm);
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.source-badge.website {
+    background: var(--info-color)20;
+    color: var(--info-color);
+}
+
+.source-badge.social-media {
+    background: var(--primary-color)20;
+    color: var(--primary-color);
+}
+
+.source-badge.email-marketing {
+    background: var(--success-color)20;
+    color: var(--success-color);
+}
+
+.source-badge.referral {
+    background: var(--warning-color)20;
+    color: var(--warning-color);
+}
+
+.source-badge.cold-call {
+    background: var(--secondary-color)20;
+    color: var(--secondary-color);
+}
+
+.source-badge.event {
+    background: var(--danger-color)20;
+    color: var(--danger-color);
+}
+
+.source-badge.advertisement {
+    background: #9c27b0;
+    color: white;
+}
+
+.source-badge.other {
+    background: var(--text-muted)20;
+    color: var(--text-muted);
+}
+
+.priority-badge {
+    padding: 4px 8px;
+    border-radius: var(--radius-sm);
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.priority-badge.low {
+    background: var(--success-color)20;
+    color: var(--success-color);
+}
+
+.priority-badge.medium {
+    background: var(--info-color)20;
+    color: var(--info-color);
+}
+
+.priority-badge.high {
+    background: var(--warning-color)20;
+    color: var(--warning-color);
+}
+
+.priority-badge.urgent {
+    background: var(--danger-color);
+    color: white;
+}
+
+.status-badge {
+    padding: 4px 8px;
+    border-radius: var(--radius-sm);
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.status-badge.new {
+    background: var(--info-color)20;
+    color: var(--info-color);
+}
+
+.status-badge.contacted {
+    background: var(--primary-color)20;
+    color: var(--primary-color);
+}
+
+.status-badge.qualified {
+    background: var(--warning-color)20;
+    color: var(--warning-color);
+}
+
+.status-badge.proposal {
+    background: #ff9800;
+    color: white;
+}
+
+.status-badge.negotiation {
+    background: #9c27b0;
+    color: white;
+}
+
+.status-badge.converted {
+    background: var(--success-color);
+    color: white;
+}
+
+.status-badge.lost {
+    background: var(--secondary-color)20;
+    color: var(--secondary-color);
+}
+
+.lead-date {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.days-ago {
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+.detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.detail-item.full-width {
+    grid-column: span 2;
+}
+
+.detail-item label {
+    font-weight: 600;
+    color: var(--text-muted);
+    font-size: 12px;
+    text-transform: uppercase;
+}
+
+.detail-item span,
+.detail-item p {
+    color: var(--text-color);
+    margin: 0;
+}
+
+.stat-card:nth-child(5) {
+    grid-column: span 1;
+}
+
+@media (max-width: 1200px) {
+    .module-stats {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .stat-card:nth-child(5) {
+        grid-column: span 1;
+    }
+}
+
+@media (max-width: 768px) {
+    .module-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .detail-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .detail-item.full-width {
+        grid-column: span 1;
+    }
+    
+    .contact-info {
+        font-size: 11px;
+    }
+}
+
+@media (max-width: 480px) {
+    .module-stats {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
